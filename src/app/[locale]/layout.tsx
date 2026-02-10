@@ -22,34 +22,39 @@ export async function generateMetadata({
   const { locale } = await params;
 
   const titles: Record<string, string> = {
-    en: "OpenCoach | AI Enterprise Transformation Consulting",
-    zh: "OpenCoach | AI 企业转型咨询",
-    ja: "OpenCoach | AIエンタープライズ変革コンサルティング",
-    ko: "OpenCoach | AI 엔터프라이즈 혁신 컨설팅",
-    fr: "OpenCoach | Conseil en Transformation IA d'Entreprise",
-    de: "OpenCoach | KI-Unternehmenstransformationsberatung",
-    es: "OpenCoach | Consultoría de Transformación IA Empresarial",
+    en: "OpenCoach | Agentic AI & Ontology for Enterprise Transformation",
+    zh: "OpenCoach | 企业级 Agentic AI 与本体论架构咨询",
+    ja: "OpenCoach | エンタープライズ向け Agentic AI & オントロジー",
+    ko: "OpenCoach | 엔터프라이즈 Agentic AI & 온톨로지 컨설팅",
+    fr: "OpenCoach | IA Agentique & Ontologie pour la Transformation d'Entreprise",
+    de: "OpenCoach | Agentic AI & Ontologie für Enterprise-Transformation",
+    es: "OpenCoach | IA Agéntica y Ontología para la Transformación Empresarial",
   };
 
   const descriptions: Record<string, string> = {
-    en: "OpenCoach Technologies Limited — AI Consulting Professionals. We don't just do AI projects. We help enterprises become AI-native organizations.",
-    zh: "OpenCoach Technologies Limited — AI 咨询专家。我们不只是做 AI 项目，我们帮助企业成为 AI 原生组织。",
-    ja: "OpenCoach Technologies Limited — AIコンサルティングプロフェッショナル。AIプロジェクトだけでなく、企業のAIネイティブ化を支援します。",
-    ko: "OpenCoach Technologies Limited — AI 컨설팅 전문가. AI 프로젝트만 하는 것이 아니라, 기업이 AI 네이티브 조직이 되도록 돕습니다.",
-    fr: "OpenCoach Technologies Limited — Professionnels du Conseil en IA. Nous aidons les entreprises à devenir des organisations IA natives.",
-    de: "OpenCoach Technologies Limited — KI-Beratungsexperten. Wir helfen Unternehmen, KI-native Organisationen zu werden.",
-    es: "OpenCoach Technologies Limited — Profesionales de Consultoría en IA. Ayudamos a las empresas a convertirse en organizaciones IA nativas.",
+    en: "OpenCoach Technologies Limited — Agentic AI architects deploying production-ready multi-agent systems with ontology-first design. From AI strategy to enterprise-scale agentic platforms.",
+    zh: "OpenCoach Technologies Limited — Agentic AI 架构师，部署基于本体论优先设计的生产级多智能体系统。从 AI 战略到企业级 Agentic AI 平台。",
+    ja: "OpenCoach Technologies Limited — オントロジーファースト設計による本番環境対応マルチエージェントシステムを展開する Agentic AI アーキテクト。",
+    ko: "OpenCoach Technologies Limited — 온톨로지 퍼스트 설계 기반 프로덕션급 멀티 에이전트 시스템을 배포하는 Agentic AI 아키텍트.",
+    fr: "OpenCoach Technologies Limited — Architectes d'IA agentique déployant des systèmes multi-agents de qualité production avec un design ontologie-first.",
+    de: "OpenCoach Technologies Limited — Agentic-AI-Architekten für produktionsreife Multi-Agent-Systeme mit Ontologie-First-Design.",
+    es: "OpenCoach Technologies Limited — Arquitectos de IA agéntica desplegando sistemas multi-agente de grado producción con diseño ontología-first.",
   };
 
   return {
     title: titles[locale] || titles.en,
     description: descriptions[locale] || descriptions.en,
     keywords: [
+      "agentic AI",
+      "ontology",
+      "multi-agent orchestration",
+      "enterprise AI transformation",
+      "knowledge graph",
+      "GraphRAG",
       "AI consulting",
-      "enterprise AI",
-      "AI transformation",
       "AI strategy",
-      "AI-native enterprise",
+      "LangGraph",
+      "AI agents",
       "OpenCoach",
     ],
     metadataBase: new URL("https://opencoach.ai"),
@@ -116,7 +121,7 @@ export default async function LocaleLayout({
               name: "OpenCoach Technologies Limited",
               url: "https://opencoach.ai",
               description:
-                "AI Consulting Professionals — helping enterprises become AI-native organizations.",
+                "Agentic AI architects deploying production-ready multi-agent systems with ontology-first design for enterprise transformation.",
               address: {
                 "@type": "PostalAddress",
                 addressLocality: "Hong Kong",
@@ -127,10 +132,12 @@ export default async function LocaleLayout({
                 contactType: "sales",
               },
               serviceType: [
-                "AI Strategy Consulting",
-                "Enterprise AI Architecture",
-                "AI Transformation",
-                "AI Governance",
+                "Agentic AI Platform Deployment",
+                "Ontology & Knowledge Graph Architecture",
+                "AI Agent Training & Enablement",
+                "Agentic Process Automation",
+                "AI Governance & Agent Safety",
+                "AI Strategy & Operating Model",
               ],
             }),
           }}
