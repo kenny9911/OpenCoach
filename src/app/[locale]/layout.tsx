@@ -124,7 +124,8 @@ export default async function LocaleLayout({
                 "Agentic AI architects deploying production-ready multi-agent systems with ontology-first design for enterprise transformation.",
               address: {
                 "@type": "PostalAddress",
-                addressLocality: "Hong Kong",
+                addressLocality:
+                  "Hong Kong, Beijing, Seattle, Shanghai, Singapore, Taipei, New York",
               },
               contactPoint: {
                 "@type": "ContactPoint",
