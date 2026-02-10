@@ -1,7 +1,42 @@
+"use client";
+
 import { useTranslations } from "next-intl";
+import { useRef, useEffect, useCallback } from "react";
 
 export default function Hero() {
   const t = useTranslations("hero");
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  const fitText = useCallback(() => {
+    const el = headingRef.current;
+    if (!el) return;
+
+    const containerWidth = el.clientWidth;
+    if (containerWidth === 0) return;
+
+    const lines = el.querySelectorAll<HTMLElement>("[data-heading-line]");
+    if (lines.length === 0) return;
+
+    // Measure at a known reference size
+    const refSize = 100;
+    el.style.fontSize = `${refSize}px`;
+
+    let maxWidth = 0;
+    lines.forEach((line) => {
+      maxWidth = Math.max(maxWidth, line.scrollWidth);
+    });
+
+    // Calculate font size that fits the widest line within the container
+    const ideal = (containerWidth / maxWidth) * refSize * 0.97;
+    el.style.fontSize = `${Math.min(ideal, 76)}px`;
+  }, []);
+
+  useEffect(() => {
+    fitText();
+    const observer = new ResizeObserver(fitText);
+    if (headingRef.current) observer.observe(headingRef.current);
+    return () => observer.disconnect();
+  }, [fitText]);
 
   const stats = [
     { value: t("stat1value"), label: t("stat1label") },
@@ -27,14 +62,18 @@ export default function Hero() {
             </span>
           </div>
 
-          <h1 className="animate-fade-in-up-delay-1 text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 leading-[1.1]">
-            {t("heading1")}{" "}
-            <br className="hidden md:block" />
-            {t("heading2")}{" "}
-            <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent animate-gradient-x">
-              {t("heading3")}
-              <br />
-              {t("heading4")}
+          <h1
+            ref={headingRef}
+            className="animate-fade-in-up-delay-1 font-bold tracking-tight text-slate-900 leading-[1.1]"
+          >
+            <span data-heading-line className="block whitespace-nowrap">
+              {t("heading1")} {t("heading2")}
+            </span>
+            <span
+              data-heading-line
+              className="block whitespace-nowrap bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent animate-gradient-x"
+            >
+              {t("heading3")} {t("heading4")}
             </span>
           </h1>
 
