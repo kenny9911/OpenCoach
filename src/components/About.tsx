@@ -32,9 +32,9 @@ export default function About() {
 
             <div className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 border border-indigo-100">
               <blockquote className="text-lg font-medium text-slate-800">
-                &ldquo;{t("quoteZh")}&rdquo;
+                &ldquo;{t("quote")}&rdquo;
               </blockquote>
-              <p className="mt-2 text-sm text-slate-500">{t("quote")}</p>
+              <p className="mt-2 text-sm text-slate-500">{t("quoteZh")}</p>
             </div>
           </div>
 
