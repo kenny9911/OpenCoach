@@ -58,12 +58,12 @@ export default function Footer() {
             {t("rights")}
           </p>
           <div className="flex gap-6 text-xs">
-            <a href="#" className="hover:text-white transition-colors">
+            <span className="hover:text-white transition-colors cursor-default">
               {t("privacy")}
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
+            </span>
+            <span className="hover:text-white transition-colors cursor-default">
               {t("terms")}
-            </a>
+            </span>
           </div>
         </div>
       </div>

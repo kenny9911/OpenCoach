@@ -41,12 +41,21 @@ export async function generateMetadata({
     es: "OpenCoach Technologies Limited — Arquitectos de IA agéntica desplegando sistemas multi-agente de grado producción con diseño ontología-first.",
   };
 
+  const ogImage = {
+    url: "https://opencoach.ai/og-image.png",
+    width: 1200,
+    height: 630,
+    alt: "OpenCoach — Agentic AI & Ontology for Enterprise Transformation",
+  };
+
   return {
     title: titles[locale] || titles.en,
     description: descriptions[locale] || descriptions.en,
+    authors: [{ name: "Kenny Chien" }, { name: "OpenCoach Technologies Limited" }],
     keywords: [
       "agentic AI",
       "ontology",
+      "ontology-first architecture",
       "multi-agent orchestration",
       "enterprise AI transformation",
       "knowledge graph",
@@ -55,14 +64,20 @@ export async function generateMetadata({
       "AI strategy",
       "LangGraph",
       "AI agents",
+      "AI native",
+      "Vibe Coding",
+      "Claude Code",
       "OpenCoach",
     ],
     metadataBase: new URL("https://opencoach.ai"),
     alternates: {
       canonical: locale === "en" ? "/" : `/${locale}`,
-      languages: Object.fromEntries(
-        routing.locales.map((l) => [l, l === "en" ? "/" : `/${l}`])
-      ),
+      languages: {
+        ...Object.fromEntries(
+          routing.locales.map((l) => [l, l === "en" ? "/" : `/${l}`])
+        ),
+        "x-default": "/",
+      },
     },
     openGraph: {
       title: titles[locale] || titles.en,
@@ -71,11 +86,13 @@ export async function generateMetadata({
       siteName: "OpenCoach",
       type: "website",
       locale: locale,
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       title: titles[locale] || titles.en,
       description: descriptions[locale] || descriptions.en,
+      images: [ogImage.url],
     },
     robots: {
       index: true,
@@ -115,32 +132,115 @@ export default async function LocaleLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "OpenCoach Technologies Limited",
-              url: "https://opencoach.ai",
-              description:
-                "Agentic AI architects deploying production-ready multi-agent systems with ontology-first design for enterprise transformation.",
-              address: {
-                "@type": "PostalAddress",
-                addressLocality:
-                  "Hong Kong, Beijing, Seattle, Shanghai, Singapore, Taipei, New York",
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "@id": "https://opencoach.ai/#organization",
+                name: "OpenCoach Technologies Limited",
+                url: "https://opencoach.ai",
+                logo: "https://opencoach.ai/og-image.png",
+                description:
+                  "Agentic AI architects deploying production-ready multi-agent systems with ontology-first design for enterprise transformation.",
+                address: {
+                  "@type": "PostalAddress",
+                  addressLocality: "Hong Kong",
+                },
+                areaServed: [
+                  "Hong Kong", "China", "United States", "Singapore", "Taiwan", "Japan", "South Korea",
+                ],
+                contactPoint: {
+                  "@type": "ContactPoint",
+                  email: "info@opencoach.ai",
+                  contactType: "sales",
+                  availableLanguage: ["English", "Chinese", "Japanese", "Korean", "French", "German", "Spanish"],
+                },
+                sameAs: [],
               },
-              contactPoint: {
-                "@type": "ContactPoint",
-                email: "info@opencoach.ai",
-                contactType: "sales",
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "@id": "https://opencoach.ai/#website",
+                name: "OpenCoach",
+                url: "https://opencoach.ai",
+                publisher: { "@id": "https://opencoach.ai/#organization" },
+                inLanguage: ["en", "zh", "ja", "ko", "fr", "de", "es"],
               },
-              serviceType: [
-                "Agentic AI Platform Deployment",
-                "Ontology & Knowledge Graph Architecture",
-                "AI Agent Training & Enablement",
-                "Agentic Process Automation",
-                "AI Governance & Agent Safety",
-                "AI Strategy & Operating Model",
-              ],
-            }),
+              {
+                "@context": "https://schema.org",
+                "@type": "ProfessionalService",
+                "@id": "https://opencoach.ai/#service",
+                name: "OpenCoach Technologies Limited",
+                provider: { "@id": "https://opencoach.ai/#organization" },
+                serviceType: "AI Consulting",
+                hasOfferCatalog: {
+                  "@type": "OfferCatalog",
+                  name: "Agentic AI Services",
+                  itemListElement: [
+                    {
+                      "@type": "Offer",
+                      itemOffered: {
+                        "@type": "Service",
+                        name: "Agentic AI Platform Deployment",
+                        description: "Deploy enterprise-grade multi-agent systems using LangGraph, CrewAI, AutoGen, and hyperscaler platforms.",
+                      },
+                    },
+                    {
+                      "@type": "Offer",
+                      itemOffered: {
+                        "@type": "Service",
+                        name: "Ontology & Knowledge Graph Architecture",
+                        description: "Build ontology-first architectures with GraphRAG pipelines achieving up to 99% search precision.",
+                      },
+                    },
+                    {
+                      "@type": "Offer",
+                      itemOffered: {
+                        "@type": "Service",
+                        name: "AI Agent Training & Enablement",
+                        description: "Upskill teams from AI consumers to AI builders with programs establishing AI Centers of Excellence.",
+                      },
+                    },
+                    {
+                      "@type": "Offer",
+                      itemOffered: {
+                        "@type": "Service",
+                        name: "Agentic Process Automation",
+                        description: "Redesign core workflows with autonomous agents that reason, decide, and act.",
+                      },
+                    },
+                    {
+                      "@type": "Offer",
+                      itemOffered: {
+                        "@type": "Service",
+                        name: "AI Governance & Agent Safety",
+                        description: "Implement production-grade guardrails with human-in-the-loop checkpoints and MCP/A2A compliance.",
+                      },
+                    },
+                    {
+                      "@type": "Offer",
+                      itemOffered: {
+                        "@type": "Service",
+                        name: "AI Strategy & Operating Model",
+                        description: "Architect your Agentic Organization blueprint aligned to McKinsey's five-pillar framework.",
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  {
+                    "@type": "ListItem",
+                    position: 1,
+                    name: "Home",
+                    item: "https://opencoach.ai",
+                  },
+                ],
+              },
+            ]),
           }}
         />
       </head>

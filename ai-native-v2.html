@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 原生变革 — 深开鸿分享</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #1a1a24;
+  --surface: #16161f;
+  --border: #2a2a3a;
+  --text: #e8e8f0;
+  --text-dim: #8888a0;
+  --accent: #00e5a0;
+  --accent2: #00c8ff;
+  --accent3: #ff6b6b;
+  --accent4: #ffd93d;
+  --glow: rgba(0,229,160,0.15);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ============ NOISE TEXTURE ============ */
+body::before {
+  content:'';
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:9999;
+}
+
+/* ============ GRID BACKGROUND ============ */
+.grid-bg {
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background-image:
+    linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events:none; z-index:-1;
+}
+
+/* ============ NAV ============ */
+nav {
+  position:fixed; top:0; left:0; width:100%; z-index:100;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+}
+nav .inner {
+  max-width:1400px; margin:auto;
+  display:flex; align-items:center; justify-content:space-between;
+  height:60px;
+}
+nav .logo {
+  font-family:'Space Mono',monospace;
+  font-size:14px; color:var(--accent);
+  letter-spacing:2px; text-transform:uppercase;
+}
+nav .links { display:flex; gap:28px; }
+nav .links a {
+  color:var(--text-dim); text-decoration:none;
+  font-size:13px; font-weight:500;
+  letter-spacing:0.5px;
+  transition: color 0.3s;
+}
+nav .links a:hover { color:var(--accent); }
+
+/* ============ HERO ============ */
+.hero {
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  padding: 120px 40px 80px;
+}
+.hero::before {
+  content:'';
+  position:absolute; top:10%; left:50%; transform:translateX(-50%);
+  width:800px; height:800px;
+  background:radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero-content {
+  max-width:1000px; text-align:center;
+  position:relative; z-index:1;
+}
+.hero-badge {
+  display:inline-block;
+  padding:6px 18px; border-radius:100px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  font-size:12px; color:var(--accent);
+  font-family:'Space Mono',monospace;
+  letter-spacing:2px; text-transform:uppercase;
+  margin-bottom:32px;
+  animation: fadeInUp 0.8s both;
+}
+.hero h1 {
+  font-size:clamp(40px,7vw,80px);
+  font-weight:900;
+  line-height:1.1;
+  letter-spacing:-2px;
+  margin-bottom:24px;
+  animation: fadeInUp 0.8s 0.2s both;
+}
+.hero h1 .highlight {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero .subtitle {
+  font-size:clamp(16px,2.2vw,22px);
+  color:var(--text-dim);
+  max-width:700px; margin:0 auto 48px;
+  animation: fadeInUp 0.8s 0.4s both;
+}
+.hero-meta {
+  display:flex; gap:40px; justify-content:center; flex-wrap:wrap;
+  animation: fadeInUp 0.8s 0.6s both;
+}
+.hero-meta .item {
+  text-align:center;
+}
+.hero-meta .num {
+  font-family:'Space Mono',monospace;
+  font-size:28px; font-weight:700;
+  color:var(--accent);
+}
+.hero-meta .label {
+  font-size:12px; color:var(--text-dim);
+  text-transform:uppercase; letter-spacing:1px;
+  margin-top:4px;
+}
+
+/* ============ SECTIONS ============ */
+section {
+  padding: 100px 40px;
+  max-width:1200px;
+  margin:auto;
+}
+.section-tag {
+  font-family:'Space Mono',monospace;
+  font-size:11px; color:var(--accent);
+  letter-spacing:3px; text-transform:uppercase;
+  margin-bottom:16px;
+  display:flex; align-items:center; gap:12px;
+}
+.section-tag::before {
+  content:''; width:40px; height:1px;
+  background:var(--accent);
+}
+.section-title {
+  font-size:clamp(28px,4vw,48px);
+  font-weight:900;
+  line-height:1.15;
+  letter-spacing:-1px;
+  margin-bottom:20px;
+}
+.section-desc {
+  font-size:18px; color:var(--text-dim);
+  max-width:700px;
+  margin-bottom:48px;
+}
+
+/* ============ LEVEL CARDS ============ */
+.levels {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+  margin-top:48px;
+}
+@media(max-width:900px){ .levels { grid-template-columns:1fr; } }
+.level-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:36px 28px;
+  position:relative;
+  overflow:hidden;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.level-card:hover {
+  transform:translateY(-4px);
+  border-color:var(--accent);
+}
+.level-card.danger { border-top:3px solid var(--accent3); }
+.level-card.mid { border-top:3px solid var(--accent4); }
+.level-card.elite { border-top:3px solid var(--accent); }
+.level-card .tier {
+  font-family:'Space Mono',monospace;
+  font-size:11px; letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:16px;
+}
+.level-card.danger .tier { color:var(--accent3); }
+.level-card.mid .tier { color:var(--accent4); }
+.level-card.elite .tier { color:var(--accent); }
+.level-card h3 {
+  font-size:22px; font-weight:700;
+  margin-bottom:12px;
+}
+.level-card p {
+  font-size:14px; color:var(--text-dim);
+  line-height:1.8;
+}
+.level-card .tag {
+  display:inline-block;
+  margin-top:16px;
+  padding:4px 12px;
+  border-radius:6px;
+  font-size:11px; font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.level-card.danger .tag { background:rgba(255,107,107,0.15); color:var(--accent3); }
+.level-card.mid .tag { background:rgba(255,217,61,0.15); color:var(--accent4); }
+.level-card.elite .tag { background:rgba(0,229,160,0.15); color:var(--accent); }
+
+/* ============ DATA GRID ============ */
+.data-grid {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:20px; margin:48px 0;
+}
+@media(max-width:800px){ .data-grid { grid-template-columns:repeat(2,1fr); } }
+.data-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:28px 24px;
+  text-align:center;
+}
+.data-card .value {
+  font-family:'Space Mono',monospace;
+  font-size:32px; font-weight:700;
+  color:var(--accent);
+  line-height:1.2;
+}
+.data-card .unit {
+  font-size:13px; color:var(--text-dim);
+  margin-top:8px;
+}
+
+/* ============ PRACTICE BLOCKS ============ */
+.practice-list {
+  display:flex; flex-direction:column; gap:24px;
+  margin-top:40px;
+}
+.practice-item {
+  display:grid; grid-template-columns:60px 1fr;
+  gap:24px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:32px;
+  transition: border-color 0.3s;
+}
+.practice-item:hover { border-color:var(--accent); }
+.practice-num {
+  font-family:'Space Mono',monospace;
+  font-size:36px; font-weight:700;
+  color:var(--accent);
+  line-height:1;
+}
+.practice-item h3 {
+  font-size:20px; font-weight:700;
+  margin-bottom:8px;
+}
+.practice-item p {
+  font-size:15px; color:var(--text-dim);
+  line-height:1.8;
+}
+.practice-item .example {
+  margin-top:12px;
+  padding:12px 16px;
+  background:rgba(0,229,160,0.06);
+  border-left:3px solid var(--accent);
+  border-radius:0 8px 8px 0;
+  font-size:13px; color:var(--text);
+  font-family:'Space Mono',monospace;
+  line-height:1.7;
+}
+
+/* ============ COMPANY SHOWCASE ============ */
+.showcase {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:20px; margin:48px 0;
+}
+@media(max-width:1000px){ .showcase { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:600px){ .showcase { grid-template-columns:1fr; } }
+.showcase-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:28px;
+  transition:border-color 0.3s, transform 0.3s;
+}
+.showcase-card:hover { border-color:var(--accent2); transform:translateY(-3px); }
+.showcase-card .name {
+  font-size:18px; font-weight:700;
+  margin-bottom:6px;
+}
+.showcase-card .stats {
+  font-family:'Space Mono',monospace;
+  font-size:13px; color:var(--accent);
+  margin-bottom:10px;
+}
+.showcase-card .desc {
+  font-size:13px; color:var(--text-dim);
+  line-height:1.7;
+}
+
+/* ============ ONTOLOGY SECTION ============ */
+.onto-diagram {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:48px;
+  margin:40px 0;
+  position:relative;
+  overflow:hidden;
+}
+.onto-diagram::before {
+  content:'';
+  position:absolute; top:-50%; right:-30%;
+  width:500px; height:500px;
+  background:radial-gradient(circle,rgba(0,200,255,0.06),transparent 70%);
+  pointer-events:none;
+}
+.onto-flow {
+  display:flex; align-items:center; justify-content:center;
+  flex-wrap:wrap; gap:16px;
+  margin:32px 0;
+}
+.onto-node {
+  padding:14px 24px;
+  border-radius:12px;
+  font-size:14px; font-weight:600;
+  text-align:center;
+  min-width:140px;
+}
+.onto-node.data { background:rgba(0,200,255,0.12); border:1px solid rgba(0,200,255,0.3); color:var(--accent2); }
+.onto-node.onto { background:rgba(0,229,160,0.12); border:1px solid rgba(0,229,160,0.3); color:var(--accent); }
+.onto-node.agent { background:rgba(255,217,61,0.12); border:1px solid rgba(255,217,61,0.3); color:var(--accent4); }
+.onto-node.action { background:rgba(255,107,107,0.12); border:1px solid rgba(255,107,107,0.3); color:var(--accent3); }
+.onto-arrow {
+  font-size:24px; color:var(--text-dim);
+}
+
+/* ============ TIMELINE ============ */
+.timeline {
+  position:relative;
+  padding-left:40px;
+  margin-top:40px;
+}
+.timeline::before {
+  content:'';
+  position:absolute; left:12px; top:0; bottom:0;
+  width:2px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent4));
+}
+.timeline-item {
+  position:relative;
+  margin-bottom:36px;
+  padding-left:20px;
+}
+.timeline-item::before {
+  content:'';
+  position:absolute;
+  left:-33px; top:6px;
+  width:12px; height:12px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 12px var(--glow);
+}
+.timeline-item .week {
+  font-family:'Space Mono',monospace;
+  font-size:12px; color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:6px;
+}
+.timeline-item h4 {
+  font-size:17px; font-weight:700;
+  margin-bottom:4px;
+}
+.timeline-item p {
+  font-size:14px; color:var(--text-dim);
+}
+
+/* ============ QUOTE ============ */
+.quote-block {
+  background: linear-gradient(135deg, var(--bg2), var(--bg3));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:60px 48px;
+  margin:64px 0;
+  text-align:center;
+  position:relative;
+}
+.quote-block::before {
+  content:'"';
+  position:absolute; top:20px; left:40px;
+  font-size:120px; font-weight:900;
+  color:rgba(0,229,160,0.1);
+  line-height:1;
+}
+.quote-block blockquote {
+  font-size:clamp(20px,3vw,28px);
+  font-weight:500;
+  line-height:1.6;
+  max-width:800px;
+  margin:0 auto 20px;
+}
+.quote-block .attr {
+  font-size:14px; color:var(--accent);
+}
+
+/* ============ CTA ============ */
+.cta-section {
+  text-align:center;
+  padding:120px 40px;
+}
+.cta-section h2 {
+  font-size:clamp(32px,5vw,56px);
+  font-weight:900;
+  line-height:1.15;
+  margin-bottom:20px;
+}
+.cta-section h2 .g {
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.cta-section p {
+  font-size:18px; color:var(--text-dim);
+  max-width:600px; margin:0 auto 40px;
+}
+.cta-btn {
+  display:inline-block;
+  padding:16px 48px;
+  background:var(--accent);
+  color:var(--bg);
+  font-size:15px; font-weight:700;
+  text-decoration:none;
+  border-radius:12px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.cta-btn:hover {
+  transform:translateY(-2px);
+  box-shadow:0 8px 32px rgba(0,229,160,0.3);
+}
+
+/* ============ DIVIDER ============ */
+.divider {
+  width:100%; max-width:1200px; margin:0 auto;
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+/* ============ FOOTER ============ */
+footer {
+  padding:40px;
+  text-align:center;
+  font-size:13px; color:var(--text-dim);
+  border-top:1px solid var(--border);
+}
+
+/* ============ ANIMATIONS ============ */
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(30px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.fade-in {
+  opacity:0; transform:translateY(30px);
+  transition: opacity 0.7s, transform 0.7s;
+}
+.fade-in.visible {
+  opacity:1; transform:translateY(0);
+}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:600px) {
+  section { padding:60px 20px; }
+  .practice-item { grid-template-columns:1fr; }
+  .practice-num { font-size:24px; }
+  nav { padding:0 16px; }
+  .onto-diagram { padding:24px; }
+  .quote-block { padding:40px 24px; }
+  .hero { padding:100px 20px 60px; }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="inner">
+    <div class="logo">AI Native ∞ 2026</div>
+    <div class="links">
+      <a href="#levels">三级人才</a>
+      <a href="#native">AI原生</a>
+      <a href="#claudecode">Claude Code</a>
+      <a href="#openclaw">OpenClaw</a>
+      <a href="#practice">实践路径</a>
+      <a href="#cases">案例</a>
+      <a href="#ontology">Ontology</a>
+      <a href="#action">立即行动</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">AI 原生 · 一人公司</div>
+    <h1>AI 如何变革一切<br><span class="highlight">从 AI 原生到一人公司</span></h1>
+    <p class="subtitle">当 AI 编程让一个人两天完成原型、两周交付产品，当 Cursor 用 20 人创造 $12亿 年收入——你的组织准备好了吗？</p>
+    <div class="hero-meta">
+      <div class="item">
+        <div class="num">92%</div>
+        <div class="label">美国开发者日常使用 AI 编程</div>
+      </div>
+      <div class="item">
+        <div class="num">10×</div>
+        <div class="label">AI 生成代码量 vs 人类</div>
+      </div>
+      <div class="item">
+        <div class="num">$3.3M</div>
+        <div class="label">Cursor 每员工年营收</div>
+      </div>
+      <div class="item">
+        <div class="num">2026</div>
+        <div class="label">一人十亿美元公司预测年</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="divider"></div>
+
+<!-- SECTION: 三级人才 -->
+<section id="levels">
+  <div class="fade-in">
+    <div class="section-tag">人才分层</div>
+    <div class="section-title">未来企业的三级人才架构</div>
+    <p class="section-desc">在 AI 原生时代，每个人的价值不再由职级定义，而由 AI 运用深度决定。不主动进化的人，将成为组织的第一批负资产。</p>
+  </div>
+
+  <div class="levels fade-in">
+    <div class="level-card danger">
+      <div class="tier">Level 1 · 被动使用者</div>
+      <h3>偶尔用用 ChatGPT</h3>
+      <p>把 AI 当搜索引擎，偶尔提问，无法将 AI 融入工作流。不理解 prompt engineering，不会构建系统化的 AI 辅助流程。</p>
+      <p style="margin-top:12px; color:var(--accent3); font-weight:600;">⚠ 这类人是企业中第一批被淘汰的人。创造的价值逐步归零，成为组织的负资产。</p>
+      <div class="tag">高淘汰风险</div>
+    </div>
+    <div class="level-card mid">
+      <div class="tier">Level 2 · 熟练运用者</div>
+      <h3>精通 AI + 会 AI 编程</h3>
+      <p>熟练使用 ChatGPT / Claude 进行深度工作，能用 AI 生成代码解决日常任务：自动化报表、数据清洗、快速原型。相当于拥有了一个不知疲倦的数字助手。</p>
+      <div class="tag">核心生产力</div>
+    </div>
+    <div class="level-card elite">
+      <div class="tier">Level 3 · Systems Builder</div>
+      <h3>用 Claude Code 构建系统</h3>
+      <p>擅长使用 Claude Code 等 agentic 工具，不只是写代码，而是<strong>构建系统</strong>——从产品架构到数据管道到自动化运维，端到端交付。一人抵百人。</p>
+      <p style="margin-top:12px; color:var(--accent); font-weight:600;">这是 AI 原生时代最稀缺、最高价值的人才。</p>
+      <div class="tag">10× 创造者</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: 数据说话 -->
+<section>
+  <div class="fade-in">
+    <div class="section-tag">数据佐证</div>
+    <div class="section-title">AI 原生公司的惊人效率</div>
+    <p class="section-desc">这不是预言，是已经发生的事实。AI 原生公司用极少的人创造了传统企业十倍的效率。</p>
+  </div>
+
+  <div class="data-grid fade-in">
+    <div class="data-card">
+      <div class="value">41%</div>
+      <div class="unit">全球代码由 AI 生成<br>2026 年数据</div>
+    </div>
+    <div class="data-card">
+      <div class="value">87%</div>
+      <div class="unit">财富500强已采用<br>Vibe Coding 平台</div>
+    </div>
+    <div class="data-card">
+      <div class="value">25%</div>
+      <div class="unit">YC 2025冬季批次创业公司<br>95%代码由AI生成</div>
+    </div>
+    <div class="data-card">
+      <div class="value">126%</div>
+      <div class="unit">开发者使用 AI 编程后<br>生产力提升</div>
+    </div>
+  </div>
+
+  <div class="showcase fade-in" id="cases">
+    <div class="showcase-card">
+      <div class="name">Claude Code (Anthropic)</div>
+      <div class="stats">Anthropic 旗舰编程工具 · Opus 4.5 驱动</div>
+      <div class="desc">终端级 AI Agent，能读取整个代码库、规划架构、写代码、调试、运行命令，连续自主工作数小时。不只是编程工具，是通用 AI 工作引擎。Scientific American 称之为编程的"GarageBand 时刻"。</div>
+    </div>
+    <div class="showcase-card">
+      <div class="name">Cursor (Anysphere)</div>
+      <div class="stats">$12亿 ARR · ~60人 · 每人$3.3M</div>
+      <div class="desc">AI 代码编辑器，史上最快达到 $5亿 ARR 的 SaaS 公司。从 $1M 到 $5亿只用了21个月。Vibe Coding 时代的标杆。</div>
+    </div>
+    <div class="showcase-card">
+      <div class="name">OpenClaw</div>
+      <div class="stats">开源 Claude Code · 多模型支持</div>
+      <div class="desc">开源的 Claude Code 替代方案，支持 Anthropic、OpenRouter、Kimi、MiniMax 等多供应商 LLM。让团队以开放方式获取 agentic coding 能力，降低 AI 编程门槛。</div>
+    </div>
+    <div class="showcase-card">
+      <div class="name">ElevenLabs</div>
+      <div class="stats">$3.3亿 ARR · ~200人 · $66亿估值</div>
+      <div class="desc">AI 语音合成平台，从零到 $1亿 ARR 仅用22个月。几乎没有传统销售团队，完全靠产品驱动增长。</div>
+    </div>
+    <div class="showcase-card">
+      <div class="name">Lovable</div>
+      <div class="stats">$2亿 ARR · ~100人 · 8个月达$1亿</div>
+      <div class="desc">AI 代码生成平台，欧洲历史上最快从0到$1亿的创业公司。45人团队做到了传统公司500人才能完成的事。</div>
+    </div>
+    <div class="showcase-card">
+      <div class="name">Replit</div>
+      <div class="stats">$2.5亿 ARR · ~150-200人 · 50×增长</div>
+      <div class="desc">AI 编程平台，推出 Replit Agent 后从 $280万 暴涨到 $1.5亿 ARR，不到一年实现50倍收入增长，人力几乎未增加。</div>
+    </div>
+    <div class="showcase-card">
+      <div class="name">Vercel</div>
+      <div class="stats">v0.dev · AI 前端生成 · Next.js 生态</div>
+      <div class="desc">前端部署平台推出 v0.dev，用自然语言生成生产级 React 组件和完整页面。结合 Next.js 生态，让 Vibe Coding 从原型直达部署，全栈前端数分钟交付。</div>
+    </div>
+    <div class="showcase-card">
+      <div class="name">Perplexity</div>
+      <div class="stats">$2亿 ARR · 250人 · 日均3千万查询</div>
+      <div class="desc">AI 搜索引擎。从2022年日均3000查询增长到2025年日均3千万，用产品力彻底颠覆了传统搜索。</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- QUOTE -->
+<section>
+  <div class="quote-block fade-in">
+    <blockquote>2026年，将出现第一个由一个人运营的十亿美元公司。我对此有70-80%的信心。</blockquote>
+    <div class="attr">— Dario Amodei，Anthropic CEO，Code with Claude 大会 2025</div>
+  </div>
+</section>
+
+<!-- SECTION: AI 原生定义 -->
+<section id="native">
+  <div class="fade-in">
+    <div class="section-tag">核心理念</div>
+    <div class="section-title">什么是 AI 原生？</div>
+    <p class="section-desc">AI 原生不是"用一下AI"，而是把 AI 作为组织运转的第一性原理。就像"互联网原生"公司在2000年代围绕互联网构建一切——AI 原生公司把 AI 嵌入每一个流程、产品和决策。如果拿掉 AI，业务就不存在了。</p>
+  </div>
+
+  <div class="onto-diagram fade-in">
+    <h3 style="margin-bottom:24px; font-size:20px;">AI 原生组织的四个维度</h3>
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px;">
+      <div style="padding:20px; background:rgba(0,229,160,0.06); border-radius:12px; border:1px solid rgba(0,229,160,0.15);">
+        <div style="font-weight:700; font-size:16px; margin-bottom:8px; color:var(--accent);">🏢 AI 原生公司</div>
+        <div style="font-size:14px; color:var(--text-dim);">核心产品和服务以 AI 能力为基础构建。用 AI 自动化内部流程，极小团队服务海量客户。Midjourney、Cursor 是范例——移除 AI，公司就不存在。</div>
+      </div>
+      <div style="padding:20px; background:rgba(0,200,255,0.06); border-radius:12px; border:1px solid rgba(0,200,255,0.15);">
+        <div style="font-weight:700; font-size:16px; margin-bottom:8px; color:var(--accent2);">🏗️ AI 原生组织</div>
+        <div style="font-size:14px; color:var(--text-dim);">从招聘到研发、从市场到运维，所有部门都以 AI 作为默认工具。HR 用 AI 筛选简历，财务用 AI 审计，工程师用 Claude Code 全栈交付。</div>
+      </div>
+      <div style="padding:20px; background:rgba(255,217,61,0.06); border-radius:12px; border:1px solid rgba(255,217,61,0.15);">
+        <div style="font-weight:700; font-size:16px; margin-bottom:8px; color:var(--accent4);">👥 AI 原生团队</div>
+        <div style="font-size:14px; color:var(--text-dim);">每个人都是 AI 操作者，而不只是"使用者"。团队成员能独立用 AI 编程完成跨职能任务——一个产品经理可以自己构建原型，一个运营可以自己搭建数据看板。</div>
+      </div>
+      <div style="padding:20px; background:rgba(255,107,107,0.06); border-radius:12px; border:1px solid rgba(255,107,107,0.15);">
+        <div style="font-weight:700; font-size:16px; margin-bottom:8px; color:var(--accent3);">🌐 AI 原生环境</div>
+        <div style="font-size:14px; color:var(--text-dim);">工具链全部 AI 化。IDE 是 Cursor / Claude Code，文档用 AI 生成，测试用 AI 自动跑，代码审查由 AI 初筛。AI 不是附加层，而是基础设施本身。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: OPC -->
+<section>
+  <div class="fade-in">
+    <div class="section-tag">One Person Company</div>
+    <div class="section-title">一人公司（OPC）：新范式</div>
+    <p class="section-desc">OPC 不是一个人孤军奋战，而是一个人指挥一支 AI Agent 军团。Sam Altman 和 Dario Amodei 都预测：2026年将诞生第一个一人十亿美元公司。</p>
+  </div>
+
+  <div class="onto-diagram fade-in">
+    <h3 style="margin-bottom:20px; font-size:18px;">OPC 运营架构</h3>
+    <div style="text-align:center; margin:24px 0;">
+      <div style="display:inline-block; padding:16px 32px; background:rgba(0,229,160,0.15); border:2px solid var(--accent); border-radius:14px; font-weight:700; font-size:18px; color:var(--accent);">你 = 首席愿景官（CVO）</div>
+    </div>
+    <div style="text-align:center; color:var(--text-dim); font-size:24px; margin:8px 0;">↓</div>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; text-align:center;">
+      <div style="padding:14px; background:rgba(0,200,255,0.08); border-radius:10px; border:1px solid rgba(0,200,255,0.2);">
+        <div style="font-size:12px; font-family:'Space Mono',monospace; color:var(--accent2);">AI 产品经理</div>
+        <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">需求分析 · PRD生成</div>
+      </div>
+      <div style="padding:14px; background:rgba(0,229,160,0.08); border-radius:10px; border:1px solid rgba(0,229,160,0.2);">
+        <div style="font-size:12px; font-family:'Space Mono',monospace; color:var(--accent);">AI 工程团队</div>
+        <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">Claude Code 全栈</div>
+      </div>
+      <div style="padding:14px; background:rgba(255,217,61,0.08); border-radius:10px; border:1px solid rgba(255,217,61,0.2);">
+        <div style="font-size:12px; font-family:'Space Mono',monospace; color:var(--accent4);">AI 市场营销</div>
+        <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">内容 · SEO · 投放</div>
+      </div>
+      <div style="padding:14px; background:rgba(255,107,107,0.08); border-radius:10px; border:1px solid rgba(255,107,107,0.2);">
+        <div style="font-size:12px; font-family:'Space Mono',monospace; color:var(--accent3);">AI 客服运营</div>
+        <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">工单 · 分析 · 自动化</div>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:24px; font-size:14px; color:var(--text-dim);">以往需要 50-200 人的工作，一个有愿景的创始人 + AI Agent 矩阵即可完成。Instagram 用 13 人做到了十亿美元——2026年，这个数字可能是 1。</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: Vibe Coding -->
+<section>
+  <div class="fade-in">
+    <div class="section-tag">Vibe Coding</div>
+    <div class="section-title">Vibe Coding：编程的 GarageBand 时刻</div>
+    <p class="section-desc">2004 年 Apple 让每个人都能做音乐，1985 年 Microsoft 让每个人都能做报表。2025 年，Vibe Coding 让每个人都能造软件。Collins 词典将"Vibe Coding"评为 2025 年度词汇。</p>
+  </div>
+
+  <div class="onto-diagram fade-in">
+    <h3 style="margin-bottom:16px; font-size:18px;">什么是 Vibe Coding？</h3>
+    <p style="font-size:15px; color:var(--text-dim); margin-bottom:24px;">用自然语言描述你想要的东西，AI 帮你生成代码。你的角色从"厨师亲手做每道菜"变成"行政总厨告诉厨房该做什么"。</p>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px;">1️⃣ 描述意图</div>
+        <div style="font-family:'Space Mono',monospace; font-size:12px; color:var(--accent); background:rgba(0,229,160,0.06); padding:10px; border-radius:8px; margin-top:8px;">"创建一个招聘管理系统，支持简历解析、候选人匹配、面试排期"</div>
+      </div>
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px;">2️⃣ AI 生成代码</div>
+        <div style="font-size:13px; color:var(--text-dim);">Claude Code 读取整个代码库，规划架构，生成代码，运行命令，自动debug——可以连续工作数小时。</div>
+      </div>
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px;">3️⃣ 迭代交付</div>
+        <div style="font-size:13px; color:var(--text-dim);">审核结果，调整方向，继续迭代。一个工程师的产出相当于四到五个人。全栈功能数天即可完成。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-block fade-in" style="margin-top:40px;">
+    <blockquote>如果今天还不相信 AI、不相信 Vibe Coding，在不久的将来就会被淘汰。这不是恐吓，是数据已经证明的事实。</blockquote>
+    <div class="attr">— 核心论点</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: Claude Code -->
+<section id="claudecode">
+  <div class="fade-in">
+    <div class="section-tag">Claude Code</div>
+    <div class="section-title">Claude Code：Vibe Coding 的终极武器</div>
+    <p class="section-desc">Claude Code 不只是代码补全，而是一个住在你终端里的全能 AI Agent——它能读取整个代码库、规划架构、编写和调试代码、运行命令，连续自主工作数小时。Scientific American 称之为编程的"GarageBand 时刻"。Anthropic 自己已经将它重新定位为 Claude Agent SDK——不只是编程工具，而是构建一切 Agent 的基础引擎。</p>
+  </div>
+
+  <!-- Claude Code 核心能力 -->
+  <div class="onto-diagram fade-in">
+    <h3 style="margin-bottom:24px; font-size:20px;">Claude Code 有多强大？</h3>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px; color:var(--accent);">🧠 全代码库理解</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.8;">不是逐文件处理——Claude Code 理解你整个项目的架构、文件关系、依赖链。处理数万 token 的跨文件 diff 而不丢失上下文，是目前市场上长上下文推理最强的编程工具。</div>
+      </div>
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px; color:var(--accent2);">⚡ 自主规划 + 执行</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.8;">给它一个目标，它自己拆解任务、规划步骤、写代码、跑测试、发现 bug、修复、再测试——完整的 Plan → Code → Test → Debug 循环，自主运行数小时。</div>
+      </div>
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px; color:var(--accent4);">🔧 终端级全权限</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.8;">直接在你的终端运行——读写文件、执行 shell 命令、操作 Git、调用 API、运行构建脚本。不只写代码，还能部署代码、管理基础设施。这就是为什么它是通用 Agent 引擎。</div>
+      </div>
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px; color:var(--accent3);">🤖 多 Agent 协作</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.8;">Agent Teams 功能：生成多个 Sub-Agent 并行处理不同子任务——一个做前端、一个做后端、一个做测试——由主 Agent 统筹协调、合并结果。Fountain 模式提速 50%，CRED 模式速度翻倍。</div>
+      </div>
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px; color:var(--accent);">📋 CLAUDE.md 持久上下文</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.8;">项目根目录放置 CLAUDE.md 文件，定义编码标准、架构决策、框架约定、审查清单。每次会话自动加载——相当于给 AI 一本永久生效的"团队规范手册"。加上 Auto Memory，Claude 会自主积累经验。</div>
+      </div>
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px; color:var(--accent2);">🔌 MCP + Hooks + Agent SDK</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.8;">通过 Model Context Protocol (MCP) 连接外部数据源和工具。Hooks 在每次操作前后自动执行脚本（lint、格式化、安全检查）。Agent SDK 让你构建自定义 Agent——金融分析、客服、个人助理，无所不能。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SWE-bench 成绩 + 效能数据 -->
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:32px;" class="fade-in">
+    <div class="data-card">
+      <div class="value">80.8%</div>
+      <div class="unit">SWE-bench 基准测试<br>行业最高分</div>
+    </div>
+    <div class="data-card">
+      <div class="value">4-5×</div>
+      <div class="unit">单个工程师产出<br>相当于传统 4-5 人</div>
+    </div>
+    <div class="data-card">
+      <div class="value">70%+</div>
+      <div class="unit">代码由 Claude Code<br>自主生成</div>
+    </div>
+    <div class="data-card">
+      <div class="value">∞</div>
+      <div class="unit">连续自主工作<br>小时级不间断</div>
+    </div>
+  </div>
+
+  <!-- Skills 系统 -->
+  <div class="onto-diagram fade-in" style="margin-top:40px;">
+    <h3 style="margin-bottom:8px; font-size:20px;">Skills 系统：让 Claude 拥有"专业技能树"</h3>
+    <p style="font-size:14px; color:var(--text-dim); margin-bottom:24px;">Skills 是 Claude Code 最被低估的超能力。一个裸的 Claude 是通用型选手——而装载了 Skills 的 Claude，是你团队里每个岗位的顶尖专家。Skills 遵循开放标准（Agent Skills），跨 Claude Code、Claude.ai、API 统一运行。</p>
+
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-bottom:24px;">
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:10px; color:var(--accent); font-size:16px;">什么是 Skill？</div>
+        <div style="font-size:14px; color:var(--text-dim); line-height:1.8;">Skill 是一个包含 <span style="font-family:'Space Mono',monospace; color:var(--accent); font-size:12px;">SKILL.md</span> 的文件夹，定义了 Claude 在特定场景下"应该怎么做"。它是可复用的指令集——你教 Claude 一次，它永远记住。你不再需要每次对话都重复说明"用我们的代码规范""按品牌配色""先跑测试再提交"。</div>
+      </div>
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:10px; color:var(--accent2); font-size:16px;">Skill 如何工作？</div>
+        <div style="font-size:14px; color:var(--text-dim); line-height:1.8;">采用<strong style="color:var(--text);">渐进式加载</strong>架构：元数据扫描（~100 tokens）→ 匹配时加载指令（<5K tokens）→ 按需读取附属文件。数十个 Skills 同时待命，不会撑爆上下文窗口。Claude 自动识别何时该用哪个 Skill，也可以通过 <span style="font-family:'Space Mono',monospace; color:var(--accent2); font-size:12px;">/skill-name</span> 手动调用。</div>
+      </div>
+    </div>
+
+    <!-- Skill 结构 -->
+    <div style="background:var(--bg); border-radius:12px; border:1px solid var(--border); padding:24px; margin-bottom:24px;">
+      <div style="font-weight:700; margin-bottom:12px; color:var(--accent4); font-size:15px;">📂 Skill 的目录结构</div>
+      <div style="font-family:'Space Mono',monospace; font-size:12px; color:var(--text); line-height:2; background:rgba(0,229,160,0.04); padding:16px; border-radius:8px; border-left:3px solid var(--accent);">
+        my-skill/<br>
+        ├── SKILL.md &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 核心指令文件（必须）— YAML 元数据 + Markdown 指令<br>
+        ├── references/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 参考资料（按需加载，不占常驻 token）<br>
+        │ &nbsp;&nbsp;└── style-guide.md<br>
+        ├── scripts/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 可执行脚本（Python/Bash，输出进入上下文）<br>
+        │ &nbsp;&nbsp;└── validate.sh<br>
+        ├── templates/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 模板文件（Claude 按模板填充输出）<br>
+        │ &nbsp;&nbsp;└── report.md<br>
+        └── examples/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 示例输出（告诉 Claude "成功是什么样"）<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;└── sample.md
+      </div>
+    </div>
+
+    <!-- Skill 的 5 大优势 -->
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+      <div style="padding:18px; background:rgba(0,229,160,0.06); border-radius:12px; border:1px solid rgba(0,229,160,0.15);">
+        <div style="font-weight:700; font-size:14px; margin-bottom:8px; color:var(--accent);">♻️ 一次定义，永久复用</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.7;">编码规范、品牌指南、审查清单、部署流程——写一次 SKILL.md，团队每个人、每次会话自动生效。不再重复提示。</div>
+      </div>
+      <div style="padding:18px; background:rgba(0,200,255,0.06); border-radius:12px; border:1px solid rgba(0,200,255,0.15);">
+        <div style="font-weight:700; font-size:14px; margin-bottom:8px; color:var(--accent2);">🧩 可组合 + 可共享</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.7;">Skills 遵循 Agent Skills 开放标准，跨 Claude Code、Cursor、Gemini CLI 通用。社区已有 1,234+ 开源 Skill，一行命令安装。团队之间可以像传递知识一样传递 Skill。</div>
+      </div>
+      <div style="padding:18px; background:rgba(255,217,61,0.06); border-radius:12px; border:1px solid rgba(255,217,61,0.15);">
+        <div style="font-weight:700; font-size:14px; margin-bottom:8px; color:var(--accent4);">⚙️ 不只是提示词——是可编程 Agent</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.7;">Skills 2.0 已进化为可编程 Agent 平台：能生成隔离的子 Agent、注入动态上下文（shell 输出）、限定工具权限、挂载生命周期 Hook。从"Markdown 指令"到"可编程的专业化 Agent"。</div>
+      </div>
+      <div style="padding:18px; background:rgba(255,107,107,0.06); border-radius:12px; border:1px solid rgba(255,107,107,0.15);">
+        <div style="font-weight:700; font-size:14px; margin-bottom:8px; color:var(--accent3);">🎯 按需加载，零浪费</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.7;">渐进式披露架构确保只加载当前任务需要的内容。一个 Skill 可以包含几十个参考文件，但只有被引用的部分才会进入上下文。脚本的代码不进入上下文——只有输出才会。</div>
+      </div>
+      <div style="padding:18px; background:rgba(0,229,160,0.06); border-radius:12px; border:1px solid rgba(0,229,160,0.15);">
+        <div style="font-weight:700; font-size:14px; margin-bottom:8px; color:var(--accent);">🏢 企业级知识沉淀</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.7;">把团队的 know-how 编码成 Skills：API 设计规范、安全审计流程、PR 审查标准、文档模板。新人入职即刻获得团队全部"隐性知识"——这就是 AI 原生时代的知识管理。</div>
+      </div>
+      <div style="padding:18px; background:rgba(0,200,255,0.06); border-radius:12px; border:1px solid rgba(0,200,255,0.15);">
+        <div style="font-weight:700; font-size:14px; margin-bottom:8px; color:var(--accent2);">🔗 Skill + MCP = 无限扩展</div>
+        <div style="font-size:13px; color:var(--text-dim); line-height:1.7;">Skills 可以创建 MCP 服务器！mcp-builder Skill 帮你构建高质量的外部 API 集成。Skill 定义"怎么做"，MCP 定义"连接什么"——两者结合就是一个完整的 AI Agent 能力矩阵。</div>
+      </div>
+    </div>
+
+    <!-- 实用 Skill 示例 -->
+    <div style="margin-top:24px; padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+      <div style="font-weight:700; margin-bottom:12px; color:var(--text); font-size:15px;">🛠️ 实战 Skills 示例</div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+        <div style="padding:12px; background:rgba(0,229,160,0.06); border-radius:8px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; color:var(--accent);">/frontend-design</div>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">避免 AI 千篇一律审美<br>27.7万+ 安装</div>
+        </div>
+        <div style="padding:12px; background:rgba(0,200,255,0.06); border-radius:8px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; color:var(--accent2);">/review-pr</div>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">自动化 PR 审查<br>代码质量 + CI/CD</div>
+        </div>
+        <div style="padding:12px; background:rgba(255,217,61,0.06); border-radius:8px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; color:var(--accent4);">/skill-creator</div>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">交互式创建新 Skill<br>Q&A 引导 + 自动生成</div>
+        </div>
+        <div style="padding:12px; background:rgba(255,107,107,0.06); border-radius:8px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; color:var(--accent3);">/mcp-builder</div>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">构建 MCP 服务器<br>外部 API 集成</div>
+        </div>
+      </div>
+      <p style="font-size:13px; color:var(--text-dim); margin-top:14px; text-align:center;">社区生态：<strong style="color:var(--accent);">Antigravity Awesome Skills</strong> — 1,234+ 开源 Skills，22K+ GitHub Stars，一行命令安装到 Claude Code / Cursor / Gemini CLI</p>
+    </div>
+  </div>
+
+  <!-- 如何成为 Claude Code 指挥家 -->
+  <div class="onto-diagram fade-in" style="margin-top:40px;">
+    <h3 style="margin-bottom:8px; font-size:20px;">如何成为 Claude Code 的指挥家？</h3>
+    <p style="font-size:14px; color:var(--text-dim); margin-bottom:28px;">Vibe Coding 的正确方法不是"随便说说让 AI 写"——而是像交响乐指挥一样：你定义意图、规划结构、把控质量，AI 负责执行。</p>
+
+    <div class="practice-list" style="margin-top:0;">
+      <div class="practice-item" style="border-color:var(--accent);">
+        <div class="practice-num" style="font-size:28px;">🎯</div>
+        <div>
+          <h3>第一步：像资深架构师一样下达指令</h3>
+          <p>不要说"写一个仪表盘"——要说"构建一个 React + TypeScript 的运维仪表盘，使用 Zustand 做状态管理，Recharts 做图表，数据通过 REST API 从 /api/metrics 获取，支持实时刷新和暗色主题"。</p>
+          <div class="example">
+            ❌ 模糊指令："帮我做个网站"<br>
+            ✅ 精准指令："用 Next.js 14 + Tailwind CSS 构建一个招聘平台首页，<br>
+            包含 Hero 区域、功能介绍（3列卡片）、客户 Logo 墙、CTA 按钮。<br>
+            配色参考 Linear.app 的极简风格，响应式适配移动端。"
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-item" style="border-color:var(--accent2);">
+        <div class="practice-num" style="font-size:28px;">📐</div>
+        <div>
+          <h3>第二步：用 CLAUDE.md 建立"团队规范"</h3>
+          <p>CLAUDE.md 是你和 AI 之间的"永久契约"。把编码标准、架构模式、测试要求、禁止事项全部写进去。每次会话自动生效，不用反复提醒。目标：控制在 200 行以内，Monorepo 用多个层级文件。</p>
+          <div class="example">
+            # CLAUDE.md 示例<br>
+            - 语言：TypeScript strict mode，ES modules<br>
+            - 框架：Fastify + Zod validation<br>
+            - 测试：Vitest，每个模块必须有对应测试<br>
+            - Git：conventional commits，PR 必须有描述<br>
+            - 禁止：不使用 any 类型，不使用 CommonJS
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-item" style="border-color:var(--accent4);">
+        <div class="practice-num" style="font-size:28px;">🔄</div>
+        <div>
+          <h3>第三步：分阶段推进，小步快跑</h3>
+          <p>复杂任务不要一次丢给 AI。拆成阶段：先规划（plan.md）→ 搭骨架 → 实现核心逻辑 → 写测试 → 补边缘 case → 重构优化。每个阶段审查后再进入下一步。这和管理真人团队的逻辑一模一样。</p>
+          <div class="example">
+            Phase 1: 读代码库，生成架构分析报告<br>
+            Phase 2: 搭建数据模型和 API 骨架<br>
+            Phase 3: 实现业务逻辑 + 单元测试<br>
+            Phase 4: 前端 UI + 集成测试<br>
+            Phase 5: 安全审查 + 性能优化 + 部署
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-item" style="border-color:var(--accent3);">
+        <div class="practice-num" style="font-size:28px;">🛡️</div>
+        <div>
+          <h3>第四步：建立安全护栏 + 质量门禁</h3>
+          <p>把 Claude Code 当做一个"超速的初级工程师"——产出极快但需要审查。用 Hooks 自动触发 linter、formatter、安全扫描。用 Git 做安全网——每次改动前自动提交，随时可以回滚。</p>
+          <div class="example">
+            Hooks 配置：<br>
+            → 文件修改后：自动运行 ESLint + Prettier<br>
+            → 提交前：自动跑测试 + 密钥扫描<br>
+            → PR 创建：自动触发 CI/CD + 代码审查 Agent
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-item" style="border-color:var(--accent);">
+        <div class="practice-num" style="font-size:28px;">🎼</div>
+        <div>
+          <h3>第五步：用 Sub-Agent 组建 AI 开发军团</h3>
+          <p>你是指挥家，不是独奏者。复杂项目用 Agent Teams：一个 Agent 做实现，另一个做安全审查，第三个做测试。甚至可以让一个 Claude 实例以"Staff Engineer"身份审查另一个 Claude 的方案。跨模型审查（Claude 写、GPT 审）进一步提升质量。</p>
+          <div class="example">
+            指挥家心法：<br>
+            → 你负责：意图、约束、优先级、验收标准<br>
+            → AI 负责：规划、编码、测试、调试、迭代<br>
+            → 结果：你的判断力 × AI 的执行力 = 10× 产出
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 关键心智模型 -->
+  <div class="quote-block fade-in" style="margin-top:40px;">
+    <blockquote>Claude Code 的本质不是"代码生成器"，而是一台"意图编译器"——你输入意图和约束，它输出可运行的系统。掌握它的人，从"写代码的人"变成了"定义系统的人"。</blockquote>
+    <div class="attr">— 从 Software Engineer 到 Outcome Engineer 的范式转变</div>
+  </div>
+
+  <div class="onto-diagram fade-in" style="margin-top:32px;">
+    <h3 style="margin-bottom:20px; font-size:18px;">从程序员到指挥家：角色进化路径</h3>
+    <div class="onto-flow">
+      <div class="onto-node data" style="min-width:150px;">传统程序员<br><span style="font-size:11px;">手写每行代码</span></div>
+      <div class="onto-arrow">→</div>
+      <div class="onto-node onto" style="min-width:150px;">AI 辅助开发者<br><span style="font-size:11px;">Copilot 补全</span></div>
+      <div class="onto-arrow">→</div>
+      <div class="onto-node agent" style="min-width:150px;">Vibe Coder<br><span style="font-size:11px;">自然语言驱动</span></div>
+      <div class="onto-arrow">→</div>
+      <div class="onto-node action" style="min-width:180px;">⭐ Agentic Engineer<br><span style="font-size:11px;">指挥 Agent 军团</span></div>
+    </div>
+    <p style="text-align:center; font-size:14px; color:var(--text-dim); margin-top:20px;">最终形态：<strong style="color:var(--accent);">Agentic Engineer / Outcome Engineer</strong>——不写代码，而是定义成果。<br>你负责战略，AI 负责战术。人的工作是策略，不是语法。</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: OpenClaw -->
+<section id="openclaw">
+  <div class="fade-in">
+    <div class="section-tag">OpenClaw</div>
+    <div class="section-title">OpenClaw：Agent 新范式的引爆点</div>
+    <p class="section-desc">2025年11月诞生，2026年1月爆发——GitHub 25万+ Stars、4.7万 Forks。OpenClaw 不只是一个工具，它引爆了"人人皆可拥有 AI Agent"的新范式，正在加速整个 Agent 应用生态的形成。</p>
+  </div>
+
+  <div class="onto-diagram fade-in">
+    <h3 style="margin-bottom:20px; font-size:18px;">OpenClaw 是什么？</h3>
+    <p style="font-size:15px; color:var(--text-dim); margin-bottom:24px;">OpenClaw 是开源的自主 AI Agent，由奥地利开发者 Peter Steinberger 创建。它不只是编程工具——而是一个 24/7 永不停歇的"个人 AI 操作系统"，通过 WhatsApp、Telegram、Slack、Discord 等消息平台与你交互，自主执行任务。</p>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px; color:var(--accent);">🔓 完全开源 + 模型无关</div>
+        <div style="font-size:13px; color:var(--text-dim);">支持 Claude、GPT-4o、DeepSeek、Kimi 2.5、Gemini，甚至通过 Ollama 运行本地模型。不绑定任何供应商，团队可以根据成本和性能自由切换。</div>
+      </div>
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px; color:var(--accent2);">🧠 持久记忆 + 主动执行</div>
+        <div style="font-size:13px; color:var(--text-dim);">不像传统 AI 每次对话重置——OpenClaw 在本地持久运行，记住你的偏好、历史交互，支持定时任务（Cron Jobs），无需提示即可主动执行。</div>
+      </div>
+      <div style="padding:20px; background:var(--bg); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-weight:700; margin-bottom:8px; color:var(--accent4);">🧩 Skills 生态 · 3000+ 扩展</div>
+        <div style="font-size:13px; color:var(--text-dim);">通过 ClawHub 社区技能市场，连接几乎任何 API 或服务。技能以 Markdown 文件定义（SKILL.md），任何人都可以创建和分享。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="onto-diagram fade-in" style="margin-top:24px;">
+    <h3 style="margin-bottom:20px; font-size:18px;">为什么 OpenClaw 引爆了 Agent 生态？</h3>
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px;">
+      <div style="padding:20px; background:rgba(0,229,160,0.06); border-radius:12px; border:1px solid rgba(0,229,160,0.15);">
+        <div style="font-weight:700; font-size:15px; margin-bottom:10px; color:var(--accent);">1. 降低 Agent 门槛至零</div>
+        <div style="font-size:14px; color:var(--text-dim); line-height:1.8;">以前部署 AI Agent 需要专业工程团队。OpenClaw 让任何会发微信消息的人都能拥有一个 24/7 运行的 AI Agent。通过 WhatsApp 发一条消息，Agent 就能帮你清理邮箱、总结项目状态、管理日历。这是真正的"Agent 民主化"。</div>
+      </div>
+      <div style="padding:20px; background:rgba(0,200,255,0.06); border-radius:12px; border:1px solid rgba(0,200,255,0.15);">
+        <div style="font-weight:700; font-size:15px; margin-bottom:10px; color:var(--accent2);">2. 催生 Agent-to-Agent 经济</div>
+        <div style="font-size:14px; color:var(--text-dim); line-height:1.8;">OpenClaw 催生了 Moltbook（Agent 社交网络）、MoltMatch（Agent 约会平台）等全新产品形态。Agent 不再只服务人类——Agent 之间开始自主交互、协作、交易。这是一个全新的经济形态正在形成。</div>
+      </div>
+      <div style="padding:20px; background:rgba(255,217,61,0.06); border-radius:12px; border:1px solid rgba(255,217,61,0.15);">
+        <div style="font-weight:700; font-size:15px; margin-bottom:10px; color:var(--accent4);">3. 加速企业 Agent 应用落地</div>
+        <div style="font-size:14px; color:var(--text-dim); line-height:1.8;">腾讯已基于 OpenClaw 推出了一整套与微信兼容的 AI 产品。中国多个科技和制造业城市开始围绕 OpenClaw 构建产业生态。开源的力量让 Agent 从硅谷实验室走进了每一个企业的工位。</div>
+      </div>
+      <div style="padding:20px; background:rgba(255,107,107,0.06); border-radius:12px; border:1px solid rgba(255,107,107,0.15);">
+        <div style="font-weight:700; font-size:15px; margin-bottom:10px; color:var(--accent3);">4. 重新定义"工具"与"同事"的边界</div>
+        <div style="font-size:14px; color:var(--text-dim); line-height:1.8;">OpenClaw 的 Workspace 架构（SOUL.md 定义人格、MEMORY.md 存储记忆、AGENTS.md 定义行为）让 Agent 拥有了身份、记忆和行为规范。它不再是"工具"——更像是一个有持续状态的"数字同事"。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="onto-diagram fade-in" style="margin-top:24px;">
+    <h3 style="margin-bottom:20px; font-size:18px;">OpenClaw + Claude Code：最佳组合拳</h3>
+    <div class="onto-flow">
+      <div class="onto-node onto" style="min-width:180px;">Claude Code<br><span style="font-size:11px;">专业编程 · 代码库级推理</span></div>
+      <div class="onto-arrow">+</div>
+      <div class="onto-node agent" style="min-width:180px;">OpenClaw<br><span style="font-size:11px;">生活自动化 · 全渠道Agent</span></div>
+      <div class="onto-arrow">=</div>
+      <div class="onto-node action" style="min-width:180px;">AI 原生工作站<br><span style="font-size:11px;">编程 + 运营 + 协作 全覆盖</span></div>
+    </div>
+    <p style="text-align:center; font-size:14px; color:var(--text-dim); margin-top:20px;">业界共识：Claude Code 负责一切代码相关的工作，OpenClaw 负责一切其他自动化。<br>两者结合，就是一个人的完整 AI 工作站——这正是 OPC（一人公司）的技术底座。</p>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:32px;" class="fade-in">
+    <div class="data-card">
+      <div class="value">257K+</div>
+      <div class="unit">GitHub Stars<br>开源史上最快增长之一</div>
+    </div>
+    <div class="data-card">
+      <div class="value">3000+</div>
+      <div class="unit">社区 Skills 扩展<br>ClawHub 生态</div>
+    </div>
+    <div class="data-card">
+      <div class="value">30+</div>
+      <div class="unit">支持的消息平台<br>WhatsApp · Telegram · Slack</div>
+    </div>
+    <div class="data-card">
+      <div class="value">24/7</div>
+      <div class="unit">永不停歇运行<br>持久记忆 + 主动执行</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: 五大实践 -->
+<section id="practice">
+  <div class="fade-in">
+    <div class="section-tag">实践路径</div>
+    <div class="section-title">成为 AI 原生的五大行动</div>
+    <p class="section-desc">从领导层到工程师到业务人员，每个人都需要走这条路。短期有学习成本，长期有 10× 的回报。</p>
+  </div>
+
+  <div class="practice-list">
+    <div class="practice-item fade-in">
+      <div class="practice-num">01</div>
+      <div>
+        <h3>一切工作先用 AI 解决</h3>
+        <p>无论是思考问题、理解需求、产品设计、系统设计、研究、讨论、写代码、测试、运维、简报、服务——默认先用 AI 来处理。未来企业里的工作和任务，都可以即时生成代码来完成，用的时候 Claude Code 立即生成，立即完成。</p>
+        <div class="example">
+          示例：产品经理需要竞品分析？→ Claude 深度研究<br>
+          运维需要监控脚本？→ Claude Code 即时生成<br>
+          客户需要定制报表？→ AI 编程15分钟交付<br>
+          市场部要做数据看板？→ Vibe Coding 半天搞定
+        </div>
+      </div>
+    </div>
+
+    <div class="practice-item fade-in">
+      <div class="practice-num">02</div>
+      <div>
+        <h3>以精通 AI 工具为目标</h3>
+        <p>短期有学习成本，长期有 10× 的报酬。以往 6 个人甚至十多个人做一年的产品，现在一个人两天即可完成原型，两周即可完成整个产品功能。目标是让 AI 编程成为每个人的"母语"。</p>
+        <div class="example">
+          Y Combinator 2025冬季批次：25%的创业公司 95% 代码由AI生成<br>
+          开发者使用 AI 编程生产力提升 126%<br>
+          一个工程师 + Claude Code = 4-5个传统工程师的产出
+        </div>
+      </div>
+    </div>
+
+    <div class="practice-item fade-in">
+      <div class="practice-num">03</div>
+      <div>
+        <h3>现有代码必须被重写</h3>
+        <p>人工写的代码难维护、修 bug 耗时、排期过长。长期来看，重写才会产生价值：降低成本、加快迭代、加快试错。一个有产品思维、有用户思维、懂产品架构的人，可以以一抵百。</p>
+        <div class="example">
+          现状：人工写的遗留代码 → 改一个 bug 排期两周<br>
+          AI 重写后：AI 理解全局架构 → 改 bug 分钟级 → 持续自动化迭代
+        </div>
+      </div>
+    </div>
+
+    <div class="practice-item fade-in">
+      <div class="practice-num">04</div>
+      <div>
+        <h3>大胆动手，从今天开始</h3>
+        <p>当你一下手开始用，你就会上瘾。几个试错以后，你就是专家了。现在 AI 编程和创新迭代速度极快——一款安卓 APP、网站、SaaS、企业软件，可以在几个小时内被复制，全栈功能少则数天即可完成。</p>
+        <div class="example">
+          第1天：安装 Claude Code，用自然语言构建第一个小工具<br>
+          第3天：完成第一个自动化工作流<br>
+          第7天：开始用 AI 重构现有项目<br>
+          第14天：你已经是 Vibe Coding 的熟练使用者
+        </div>
+      </div>
+    </div>
+
+    <div class="practice-item fade-in">
+      <div class="practice-num">05</div>
+      <div>
+        <h3>构建 Actionable Ontology</h3>
+        <p>软件公司未来唯一的壁垒：通用大模型没有的私有数据——业务知识、积累数据、know-how、传感器数据。但这些数据是碎片化的、非结构化的，不可能靠人力梳理。答案是 Ontology，并且是 Actionable Ontology。</p>
+        <div class="example">
+          Ontology = 企业的"数字孪生"<br>
+          数据 + 逻辑 + 行动 = 决策闭环<br>
+          Palantir 的模式已经证明：Ontology 是 AI 时代的操作系统
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: Ontology -->
+<section id="ontology">
+  <div class="fade-in">
+    <div class="section-tag">竞争壁垒</div>
+    <div class="section-title">Actionable Ontology：唯一的护城河</div>
+    <p class="section-desc">当所有软件都可以在几小时内被复制，你唯一不可复制的是：企业独有的知识、数据和决策逻辑。Palantir 的 Ontology 模式已经成为 2026 年企业 AI 的黄金标准。</p>
+  </div>
+
+  <div class="onto-diagram fade-in">
+    <h3 style="margin-bottom:24px; font-size:18px;">Ontology 核心架构</h3>
+    <div class="onto-flow">
+      <div class="onto-node data">碎片数据<br><span style="font-size:11px;">数据库 · API · 日志 · 传感器</span></div>
+      <div class="onto-arrow">→</div>
+      <div class="onto-node onto">Ontology 本体<br><span style="font-size:11px;">实体 · 关系 · 语义层</span></div>
+      <div class="onto-arrow">→</div>
+      <div class="onto-node agent">AI Agent<br><span style="font-size:11px;">推理 · 分析 · 规划</span></div>
+      <div class="onto-arrow">→</div>
+      <div class="onto-node action">Action 行动<br><span style="font-size:11px;">决策 · 执行 · 反馈</span></div>
+    </div>
+    <p style="text-align:center; font-size:14px; color:var(--text-dim); margin-top:16px;">Ontology 的核心：不只是表示数据，而是表示决策。数据 + 逻辑 + 行动 = 决策闭环。</p>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:32px;" class="fade-in">
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px;">
+      <h4 style="font-size:17px; margin-bottom:12px; color:var(--accent);">为什么是壁垒？</h4>
+      <p style="font-size:14px; color:var(--text-dim); line-height:1.8;">通用大模型可以写代码、生成文案、做分析——但它不知道你的客户画像、你的供应链节点、你的业务 know-how。这些私有知识，经过 Ontology 结构化后，变成 AI Agent 的"上下文"——只有你的 Agent 能做出精准的业务决策。</p>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px;">
+      <h4 style="font-size:17px; margin-bottom:12px; color:var(--accent2);">Palantir 的证明</h4>
+      <p style="font-size:14px; color:var(--text-dim); line-height:1.8;">Palantir 在 2026 年已成为企业 AI 的基础设施。核心就是 Ontology——企业的数字孪生。从国防到制造到金融到医疗，Ontology 让 AI 在上下文中运作，而不是孤立运行。a16z 甚至发文称这是"Palantir 化一切"的时代。</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: 落地路线图 -->
+<section>
+  <div class="fade-in">
+    <div class="section-tag">实施路线</div>
+    <div class="section-title">从0到1：企业 AI 原生转型路线图</div>
+    <p class="section-desc">面向管理者、技术领导、工程师和业务人员的 12 周转型路径。</p>
+  </div>
+
+  <div class="timeline fade-in">
+    <div class="timeline-item">
+      <div class="week">第 1-2 周 · 觉醒</div>
+      <h4>全员 AI 工具入门 + 管理层共识</h4>
+      <p>安装 Claude Code / Cursor，所有人用自然语言完成一个小任务。管理层统一认知：AI 不是锦上添花，是生存必须。</p>
+    </div>
+    <div class="timeline-item">
+      <div class="week">第 3-4 周 · 试点</div>
+      <h4>选择 1-2 个业务场景做 AI 原生改造</h4>
+      <p>例如：用 Claude Code 重写一个内部报表系统，或用 AI 编程构建一个自动化测试流水线。目标是让团队"手上有感觉"。</p>
+    </div>
+    <div class="timeline-item">
+      <div class="week">第 5-8 周 · 扩展</div>
+      <h4>培养 Systems Builder + 推广 Vibe Coding</h4>
+      <p>识别团队中 Level 3 潜力人才，重点培养。建立内部 Vibe Coding 规范，明确哪些项目可以 AI-first 开发、哪些模型可用、审查流程如何。</p>
+    </div>
+    <div class="timeline-item">
+      <div class="week">第 9-10 周 · 重构</div>
+      <h4>遗留代码 AI 重写 + Ontology 梳理</h4>
+      <p>用 AI 工具系统化重写关键模块，同时开始梳理企业私有数据的 Ontology 架构。数据 → 实体 → 关系 → 行动。</p>
+    </div>
+    <div class="timeline-item">
+      <div class="week">第 11-12 周 · 固化</div>
+      <h4>形成 AI 原生工作文化 + OPC 实践</h4>
+      <p>AI 原生成为团队默认工作方式。每个人都能用 AI 编程完成跨职能任务。探索 OPC 模式——一人带 Agent 团队交付完整项目。</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION: 各角色行动 -->
+<section>
+  <div class="fade-in">
+    <div class="section-tag">角色指南</div>
+    <div class="section-title">每个角色的 AI 原生行动清单</div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:32px;" class="fade-in">
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px;">
+      <h4 style="font-size:16px; margin-bottom:12px;">🏛️ 领导者 / 中高管</h4>
+      <p style="font-size:14px; color:var(--text-dim); line-height:2;">
+        • 用 AI 做战略分析和竞品研究（不再依赖咨询公司）<br>
+        • 用 Claude Deep Research 做市场洞察<br>
+        • 推动"AI-first"文化，让 AI 工具使用成为 KPI<br>
+        • 重新思考人力配置：需要 Systems Builder，不需要"代码搬运工"<br>
+        • 理解 Ontology 的战略价值，投资私有数据治理
+      </p>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px;">
+      <h4 style="font-size:16px; margin-bottom:12px;">⚡ 工程师 / 技术人员</h4>
+      <p style="font-size:14px; color:var(--text-dim); line-height:2;">
+        • 从 Level 1 跃升到 Level 3：目标是 Systems Builder<br>
+        • 精通 Claude Code —— 它不只是代码工具，是通用 AI Agent<br>
+        • 学会写 CLAUDE.md（项目上下文文件），让 AI 理解你的代码库<br>
+        • 用 Vibe Coding 做原型，用传统工程把控质量<br>
+        • 关注 Agentic Engineering：从写代码到指挥 Agent 管线
+      </p>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px;">
+      <h4 style="font-size:16px; margin-bottom:12px;">📊 业务 / 运营人员</h4>
+      <p style="font-size:14px; color:var(--text-dim); line-height:2;">
+        • 用 AI 编程构建自己的数据看板（不再等 IT 排期）<br>
+        • 用 Claude 自动化日常报表、数据清洗<br>
+        • 学习基础 prompt engineering，提高 AI 交互效率<br>
+        • 参与 Ontology 梳理——你是业务知识的专家<br>
+        • 成为"AI 增强的业务专家"，创造跨职能价值
+      </p>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px;">
+      <h4 style="font-size:16px; margin-bottom:12px;">🎨 产品 / 设计人员</h4>
+      <p style="font-size:14px; color:var(--text-dim); line-height:2;">
+        • 用 Vibe Coding 直接构建可交互原型（不是画图交接）<br>
+        • 用 AI 做用户研究、竞品分析、数据挖掘<br>
+        • 懂产品架构 = 以一抵百的乘数效应<br>
+        • 成为"会编程的产品人"——Marc Andreessen 所说的"超能力个体"<br>
+        • 用 AI 快速试错：一个想法从概念到原型只需几小时
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<section class="cta-section" id="action">
+  <div class="fade-in">
+    <h2>未来已来<br><span class="g">选择进化，而非被淘汰</span></h2>
+    <p>软件可以在数小时内被复制。代码可以在数分钟内被生成。唯一不可替代的是你的判断力、你的业务洞察、你的 Ontology。现在就开始。</p>
+    <a href="#levels" class="cta-btn">↑ 回到顶部，开始行动</a>
+  </div>
+</section>
+
+<footer>
+  <p>Kenny 分享 · 2026</p>
+  <p style="margin-top:8px; font-size:11px;">数据来源：Anthropic Code with Claude 大会、Y Combinator、Sacra、Dealroom、CB Insights、Gartner、Collins Dictionary、a16z、Palantir Blog</p>
+</footer>
+
+<script>
+// Intersection Observer for fade-in animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
