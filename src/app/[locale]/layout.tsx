@@ -42,7 +42,7 @@ export async function generateMetadata({
   };
 
   const ogImage = {
-    url: "https://opencoach.ai/og-image.png",
+    url: "https://opencoach.ai/opengraph-image",
     width: 1200,
     height: 630,
     alt: "OpenCoach — Agentic AI & Ontology for Enterprise Transformation",
@@ -139,7 +139,7 @@ export default async function LocaleLayout({
                 "@id": "https://opencoach.ai/#organization",
                 name: "OpenCoach Technologies Limited",
                 url: "https://opencoach.ai",
-                logo: "https://opencoach.ai/og-image.png",
+                logo: "https://opencoach.ai/opengraph-image",
                 description:
                   "Agentic AI architects deploying production-ready multi-agent systems with ontology-first design for enterprise transformation.",
                 address: {
