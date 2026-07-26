@@ -32,7 +32,7 @@ jobs:
             -DWHISPER_BUILD_EXAMPLES=ON
           cmake --build /tmp/whisper.cpp/build --config Release -j 2
 
-      - name: Download multilingual Whisper small q5_1 model
+      - name: Download multilingual Whisper model and speaker encoder
         shell: bash
         run: |
           set -euxo pipefail
@@ -41,13 +41,25 @@ jobs:
             https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small-q5_1.bin \
             --output bundle/ggml-small-q5_1.bin
           echo "ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb  bundle/ggml-small-q5_1.bin" | sha256sum -c -
+
+          python -m pip install --disable-pip-version-check --quiet "huggingface_hub<1.0"
+          python - <<'PY'
+          from huggingface_hub import snapshot_download
+          snapshot_download(
+              repo_id="speechbrain/spkrec-ecapa-voxceleb",
+              local_dir="bundle/spkrec-ecapa-voxceleb",
+              local_dir_use_symlinks=False,
+              allow_patterns=["*.ckpt", "*.yaml", "*.py", "*.txt", "*.json"],
+          )
+          PY
+
           cp /tmp/whisper.cpp/build/bin/whisper-cli bundle/
           cp /tmp/whisper.cpp/LICENSE bundle/LICENSE-whisper.cpp
           chmod +x bundle/whisper-cli
           ldd bundle/whisper-cli || true
-          sha256sum bundle/whisper-cli bundle/ggml-small-q5_1.bin > bundle/SHA256SUMS
+          find bundle -type f -print0 | sort -z | xargs -0 sha256sum > bundle/SHA256SUMS
 
-      - name: Upload local Whisper bundle
+      - name: Upload local transcription bundle
         uses: actions/upload-artifact@v4
         with:
           name: whisper-small-linux
